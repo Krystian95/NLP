@@ -17,6 +17,7 @@ import java.util.Scanner;
  */
 public class Analyzer {
 
+    private String mainSubFolder;
     private String pathStopWords;
     private String pathFolderTexts;
 
@@ -36,8 +37,9 @@ public class Analyzer {
      * @throws FileNotFoundException
      * @throws UnsupportedEncodingException
      */
-    public Analyzer(String pathStopWords, String pathFolderTexts) throws FileNotFoundException, UnsupportedEncodingException {
+    public Analyzer(String mainSubFolder, String pathStopWords, String pathFolderTexts) throws FileNotFoundException, UnsupportedEncodingException {
 
+        this.mainSubFolder = mainSubFolder;
         this.pathStopWords = pathStopWords;
         this.pathFolderTexts = pathFolderTexts;
         this.tokenCounter = 0;
@@ -56,7 +58,7 @@ public class Analyzer {
         generateRegularExpressionForPunctuation(this.punctuation);
         saveStopWords(this.pathStopWords);
 
-        final File folder = new File(this.pathFolderTexts);
+        File folder = new File(this.pathFolderTexts);
         listFilesForFolder(folder);
 
         for (String fileName : this.fileNames) {
@@ -66,12 +68,14 @@ public class Analyzer {
 
     private void saveStopWords(String path) throws FileNotFoundException {
 
-        Scanner s = new Scanner(new File(path));
-        while (s.hasNext()) {
-            this.stopWords.add(s.next());
+        try (Scanner s = new Scanner(new File(path))) {
+            while (s.hasNext()) {
+                this.stopWords.add(s.next());
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR! An error occours when trying to read the stop words file. Here some details:");
+            System.out.println(e);
         }
-
-        s.close();
     }
 
     private void createIntermediateFileWithEnumeratedTokens(String path, String fileName) throws FileNotFoundException, UnsupportedEncodingException {
@@ -79,7 +83,7 @@ public class Analyzer {
         this.tokenCounter = 0;
         Scanner s;
 
-        try (PrintWriter writer = new PrintWriter("texts/temp_files/~" + fileName, "UTF-8")) {
+        try (PrintWriter writer = new PrintWriter(this.mainSubFolder + "temp_files/~" + fileName, "UTF-8")) {
 
             s = new Scanner(new File(path + fileName));
             while (s.hasNext()) {
@@ -90,8 +94,8 @@ public class Analyzer {
 
                     String[] wordSplitted = splitStringForPunctuation(word);
 
-                    for (int i = 0; i < wordSplitted.length; i++) {
-                        writeWordToIntermediateFile(writer, attachTokenNumber(wordSplitted[i]));
+                    for (String singleWord : wordSplitted) {
+                        writeWordToIntermediateFile(writer, attachTokenNumber(singleWord));
                     }
                 } else {
                     writeWordToIntermediateFile(writer, attachTokenNumber(word));
@@ -104,9 +108,9 @@ public class Analyzer {
         }
     }
 
-    private void listFilesForFolder(final File folder) {
+    private void listFilesForFolder(File folder) {
 
-        for (final File fileEntry : folder.listFiles()) {
+        for (File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
                 listFilesForFolder(fileEntry);
             } else {
@@ -116,7 +120,6 @@ public class Analyzer {
     }
 
     private boolean stringContainsItemFromList(String word) {
-
         return Arrays.stream(this.punctuation).parallel().anyMatch(word::contains);
     }
 
@@ -127,11 +130,7 @@ public class Analyzer {
     }
 
     private String[] splitStringForPunctuation(String word) {
-
         return word.split(this.regularExpressionPunctuation);
-
-        //return word.split("((?<=\\,|\\'|\\.|\\;|\\·|\\)|(?=\\,|\\'|\\.|\\;|\\·))");
-        //return word.split("((?<=\\.|\\,|\\;|\\:|\\!|\\?|\\||\\%|\\(|\\)|\\=|\\'|\\^|\\*|\\+|\\°|\\§|\\@|\\-|\\_|\\<|\\>)|(?=\\.|\\,|\\;|\\:|\\!|\\?|\\||\\%|\\(|\\)|\\=|\\'|\\^|\\*|\\+|\\°|\\§|\\@|\\-|\\_|\\<|\\>))");
     }
 
     private void writeWordToIntermediateFile(PrintWriter writer, String word) throws FileNotFoundException, UnsupportedEncodingException {

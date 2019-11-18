@@ -12,10 +12,11 @@ public class MainApp {
 
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
 
-        String pathStopWords = "texts/stop_words.txt";
-        String pathFolderTexts = "texts/original_texts/";
+        String mainSubFolder = "texts/";
+        String pathStopWords = mainSubFolder + "stop_words.txt";
+        String pathFolderTexts = mainSubFolder + "original_texts/";
 
-        Analyzer analyzer = new Analyzer(pathStopWords, pathFolderTexts);
+        Analyzer analyzer = new Analyzer(mainSubFolder, pathStopWords, pathFolderTexts);
         analyzer.analyze();
     }
 }
