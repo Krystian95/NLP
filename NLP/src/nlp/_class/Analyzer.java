@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -20,14 +21,18 @@ public class Analyzer {
     private String mainSubFolder;
     private String pathStopWords;
     private String pathFolderTexts;
+    private final String tempFolderName = "temp_files/";
+    private final String tempFinalFolderName = "final/";
 
-    private final String[] punctuation = {".", ",", ";", ":", "!", "?", "|", "%", "(", ")", "=", "'", "^", "*", "+", "°", "§", "@", "-", "_", "<", ">"};
-
+    private final String[] punctuation = {".", ",", ";", ":", "·", "!", "?", "|", "%", "(", ")", "=", "'", "^", "*", "+", "°", "§", "@", "-", "_", "<", ">"};
+    private List<String> listPunctuation;
+    private String regularExpressionPunctuation;
+    
     private ArrayList<String> stopWords;
     private ArrayList<String> fileNames;
 
     private int tokenCounter;
-    private String regularExpressionPunctuation;
+    private final String tokenSeparator = "_";
 
     /**
      * Constructor for the Analyzer class.
@@ -45,6 +50,10 @@ public class Analyzer {
         this.tokenCounter = 0;
         this.fileNames = new ArrayList<>();
         this.stopWords = new ArrayList<>();
+        this.listPunctuation = Arrays.asList(this.punctuation);
+        
+        File directory = new File(this.mainSubFolder + this.tempFolderName);
+        deleteRecursivelyOnlyFilesFromDirectory(directory);
     }
 
     /**
@@ -64,6 +73,13 @@ public class Analyzer {
         for (String fileName : this.fileNames) {
             createIntermediateFileWithEnumeratedTokens(this.pathFolderTexts, fileName);
         }
+        
+        File tempFolder = new File(this.mainSubFolder + this.tempFolderName);
+        listFilesForFolder(tempFolder);
+        
+        for (String tempFileName : this.fileNames) {
+            createFinalFileWithoutStopWords(this.mainSubFolder + this.tempFolderName, tempFileName);
+        }
     }
 
     private void saveStopWords(String path) throws FileNotFoundException {
@@ -73,8 +89,8 @@ public class Analyzer {
                 this.stopWords.add(s.next());
             }
         } catch (Exception e) {
-            System.out.println("ERROR! An error occours when trying to read the stop words file. Here some details:");
-            System.out.println(e);
+            System.err.println("ERROR! An error occours when trying to read the stop words file. Here some details:");
+            System.err.println(e);
         }
     }
 
@@ -83,57 +99,106 @@ public class Analyzer {
         this.tokenCounter = 0;
         Scanner s;
 
-        try (PrintWriter writer = new PrintWriter(this.mainSubFolder + "temp_files/~" + fileName, "UTF-8")) {
+        try (PrintWriter writer = new PrintWriter(this.mainSubFolder + this.tempFolderName + "~" + fileName, "UTF-8")) {
 
             s = new Scanner(new File(path + fileName));
             while (s.hasNext()) {
 
                 String word = s.next();
 
-                if (stringContainsItemFromList(word)) {
+                if (stringContainsPunctuationCharacters(word)) {
 
                     String[] wordSplitted = splitStringForPunctuation(word);
 
                     for (String singleWord : wordSplitted) {
-                        writeWordToIntermediateFile(writer, attachTokenNumber(singleWord));
+                        writeWordIntoFile(writer, attachTokenNumber(singleWord));
                     }
                 } else {
-                    writeWordToIntermediateFile(writer, attachTokenNumber(word));
+                    writeWordIntoFile(writer, attachTokenNumber(word));
                 }
             }
             s.close();
         } catch (Exception e) {
-            System.out.println("ERROR! An error occours when trying to write a temporany file inside the project folder. Here some details:");
-            System.out.println(e);
+            System.err.println("ERROR! An error occours when trying to write a temporany file inside the project folder. Here some details:");
+            System.err.println(e);
         }
+    }
+    
+    private void createFinalFileWithoutStopWords(String path, String fileName) throws FileNotFoundException, UnsupportedEncodingException {
+        
+        this.tokenCounter = 0;
+        Scanner s;
+
+        try (PrintWriter writer = new PrintWriter(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName + fileName, "UTF-8")) {
+            
+            s = new Scanner(new File(path + fileName));
+            while (s.hasNext()) {
+                
+                String word = s.next();
+                
+                String[] tokenNumberAndWord = separateTokenNumber(word);
+                
+                if(!stringIsStopWordOrPunctuationCharacter(tokenNumberAndWord[1])){
+                    String finalWorld = this.tokenSeparator + tokenNumberAndWord[0] + this.tokenSeparator + tokenNumberAndWord[1];
+                    writeWordIntoFile(writer, finalWorld);
+                }
+            }
+            s.close();
+        } catch (Exception e) {
+            System.err.println("ERROR! An error occours when trying to write a temporany FINAL file inside the project folder. Here some details:");
+            System.err.println(e);
+        }
+    }
+    
+    private String[] separateTokenNumber (String word) {
+        
+        String[] wordSplitted = word.split(tokenSeparator);
+        String[] tokenNumberAndWord = {wordSplitted[1],wordSplitted[2]};
+        
+        return tokenNumberAndWord;
+    }
+    
+    private boolean stringIsStopWordOrPunctuationCharacter (String word) {
+        
+        return stringIsStopWord(word) || stringIsPuncruationCharacter(word);
     }
 
     private void listFilesForFolder(File folder) {
-
+        
+        this.fileNames = new ArrayList<>();
+        
         for (File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
                 listFilesForFolder(fileEntry);
-            } else {
+            } else if (!fileEntry.getName().equals(".DS_Store")){
                 this.fileNames.add(fileEntry.getName());
             }
         }
     }
 
-    private boolean stringContainsItemFromList(String word) {
+    private boolean stringContainsPunctuationCharacters(String word) {
         return Arrays.stream(this.punctuation).parallel().anyMatch(word::contains);
+    }
+    
+    private boolean stringIsStopWord(String word) {
+        return this.stopWords.contains(word);
+    }
+    
+    private boolean stringIsPuncruationCharacter(String word) {
+        return this.listPunctuation.contains(word);
     }
 
     private String attachTokenNumber(String word) {
 
         this.tokenCounter++;
-        return "[" + this.tokenCounter + "]" + word;
+        return this.tokenSeparator + this.tokenCounter + this.tokenSeparator + word;
     }
 
     private String[] splitStringForPunctuation(String word) {
         return word.split(this.regularExpressionPunctuation);
     }
 
-    private void writeWordToIntermediateFile(PrintWriter writer, String word) throws FileNotFoundException, UnsupportedEncodingException {
+    private void writeWordIntoFile(PrintWriter writer, String word) throws FileNotFoundException, UnsupportedEncodingException {
 
         writer.print(word + " ");
     }
@@ -158,5 +223,15 @@ public class Analyzer {
         regularExpression.append("))");
         this.regularExpressionPunctuation = regularExpression.toString();
     }
-
+    
+    private void deleteRecursivelyOnlyFilesFromDirectory(File directory) {
+        
+        for (File file : directory.listFiles()) {
+            if (!file.isDirectory()) {
+                file.delete();
+            } else {
+                deleteRecursivelyOnlyFilesFromDirectory(file);
+            }
+        }
+    }
 }
