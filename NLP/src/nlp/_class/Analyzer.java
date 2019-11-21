@@ -1,7 +1,10 @@
 package nlp._class;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -33,6 +36,8 @@ public class Analyzer {
 
     private int tokenCounter;
     private final String tokenSeparator = "_";
+    private int nLastCharsToRemove = 2;
+    private int lenghtOfPhrase = 5;
 
     /**
      * Constructor for the Analyzer class.
@@ -62,7 +67,7 @@ public class Analyzer {
      * @throws FileNotFoundException
      * @throws UnsupportedEncodingException
      */
-    public void analyze() throws FileNotFoundException, UnsupportedEncodingException {
+    public void analyze() throws FileNotFoundException, UnsupportedEncodingException, IOException {
 
         generateRegularExpressionForPunctuation(this.punctuation);
         saveStopWords(this.pathStopWords);
@@ -79,6 +84,13 @@ public class Analyzer {
         
         for (String tempFileName : this.fileNames) {
             createFinalFileWithoutStopWords(this.mainSubFolder + this.tempFolderName, tempFileName);
+        }
+        
+        File finalFolder = new File(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName);
+        listFilesForFolder(finalFolder);
+        
+        for (String finalFileName : this.fileNames) {
+            checkRecurrentQuotes(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, finalFileName, lenghtOfPhrase);
         }
     }
 
@@ -138,9 +150,21 @@ public class Analyzer {
                 
                 String[] tokenNumberAndWord = separateTokenNumber(word);
                 
-                if(!stringIsStopWordOrPunctuationCharacter(tokenNumberAndWord[1])){
-                    String finalWorld = this.tokenSeparator + tokenNumberAndWord[0] + this.tokenSeparator + tokenNumberAndWord[1];
+                String wordToAnalyze = tokenNumberAndWord[1];
+                
+                
+                if(!stringIsStopWordOrPunctuationCharacter(wordToAnalyze)){
+                    
+                    //System.out.print(wordToAnalyze + " ");
+                    
+                    if(wordToAnalyze.length() > this.nLastCharsToRemove){
+                        wordToAnalyze = wordToAnalyze.substring(0, wordToAnalyze.length() - this.nLastCharsToRemove);
+                    }
+                    
+                    String finalWorld = this.tokenSeparator + tokenNumberAndWord[0] + this.tokenSeparator + wordToAnalyze;
                     writeWordIntoFile(writer, finalWorld);
+                    
+                    //System.out.println(wordToAnalyze);
                 }
             }
             s.close();
@@ -152,15 +176,15 @@ public class Analyzer {
     
     private String[] separateTokenNumber (String word) {
         
-        String[] wordSplitted = word.split(tokenSeparator);
+        String[] wordSplitted = word.split(this.tokenSeparator);
         String[] tokenNumberAndWord = {wordSplitted[1],wordSplitted[2]};
-        
+
         return tokenNumberAndWord;
     }
     
     private boolean stringIsStopWordOrPunctuationCharacter (String word) {
         
-        return stringIsStopWord(word) || stringIsPuncruationCharacter(word);
+        return stringIsStopWord(word) || stringIsPunctuationCharacter(word);
     }
 
     private void listFilesForFolder(File folder) {
@@ -184,7 +208,7 @@ public class Analyzer {
         return this.stopWords.contains(word);
     }
     
-    private boolean stringIsPuncruationCharacter(String word) {
+    private boolean stringIsPunctuationCharacter(String word) {
         return this.listPunctuation.contains(word);
     }
 
@@ -233,5 +257,159 @@ public class Analyzer {
                 deleteRecursivelyOnlyFilesFromDirectory(file);
             }
         }
+    }
+    
+    /*
+    private void checkRecurrentQuotes (String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException {
+        
+        ArrayList<String> checkPhrase = new ArrayList<String>();
+        ArrayList<Boolean> checkTemp = new ArrayList<Boolean>();
+        
+        checkPhrase = initializeCheckPharase(path, fileName, lenghtOfPhrase);
+
+        //System.out.println(Arrays.toString(checkPhrase.toArray()));
+        
+        Scanner s;
+        int count = 0;
+        int scannerCount = 0;
+        s = new Scanner(new File(path + fileName));
+        
+        while (s.hasNext()) {
+            
+            if(count >= lenghtOfPhrase){
+                s.reset();
+                count = 0;
+                
+                //manageQuote();
+                
+                System.out.println(Arrays.toString(checkTemp.toArray()));
+                checkTemp.clear();
+            }
+
+            String word = s.next();
+            String[] wordTemp = separateTokenNumber(word);
+            
+            //System.out.println(wordTemp[1]);
+            System.out.println(word);
+            
+            if(wordTemp[1].equals(checkPhrase.get(count))) {
+                checkTemp.add(true);
+            } else {
+                checkTemp.add(false);
+            }
+            
+            count++;
+        }
+        
+        System.out.println();
+        System.out.println();
+    }
+    */
+    
+    private void checkRecurrentQuotes (String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException, IOException {
+        
+        ArrayList<String> checkPhrase = new ArrayList<String>();
+        ArrayList<Boolean> checkTemp = new ArrayList<Boolean>();
+        
+        checkPhrase = initializeCheckPharase(path, fileName, lenghtOfPhrase);
+
+        //System.out.println(Arrays.toString(checkPhrase.toArray()));
+        
+        BufferedReader in = new BufferedReader(new FileReader(path + fileName));
+        String word;
+
+        //List<String> list = new ArrayList<String>();
+        int count = 0;
+        
+        while((word = in.readLine()) != null){
+            //list.add(word);
+            
+            
+            if(count >= lenghtOfPhrase){
+                
+                count = 0;
+                
+                //manageQuote();
+                
+                System.out.println(Arrays.toString(checkTemp.toArray()));
+                checkTemp.clear();
+            }
+            
+            String[] wordTemp = separateTokenNumber(word);
+            
+            System.out.println(wordTemp[1]);
+            //System.out.println(word);
+            
+            if(wordTemp[1].equals(checkPhrase.get(count))) {
+                checkTemp.add(true);
+            } else {
+                checkTemp.add(false);
+            }
+            
+            count++;
+            
+        }
+
+        //System.out.println(Arrays.toString(list.toArray()));
+        //String[] stringArr = list.toArray(new String[0]);
+        
+        
+        
+        
+        
+        /*
+        Scanner s;
+        int count = 0;
+        int scannerCount = 0;
+        s = new Scanner(new File(path + fileName));
+        
+        while (s.hasNext()) {
+            
+            if(count >= lenghtOfPhrase){
+                s.reset();
+                count = 0;
+                
+                //manageQuote();
+                
+                System.out.println(Arrays.toString(checkTemp.toArray()));
+                checkTemp.clear();
+            }
+
+            String word = s.next();
+            String[] wordTemp = separateTokenNumber(word);
+            
+            //System.out.println(wordTemp[1]);
+            System.out.println(word);
+            
+            if(wordTemp[1].equals(checkPhrase.get(count))) {
+                checkTemp.add(true);
+            } else {
+                checkTemp.add(false);
+            }
+            
+            count++;
+        }*/
+        
+        System.out.println();
+        System.out.println();
+    }
+    
+    private ArrayList<String> initializeCheckPharase (String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException {
+        
+        ArrayList<String> checkPhraseTemp = new ArrayList<String>();
+        
+        Scanner s;
+        int count = 0;
+        s = new Scanner(new File(path + fileName));
+        
+        while (s.hasNext() && count < lenghtOfPhrase) {
+
+            String word = s.next();
+            String[] wordTemp = separateTokenNumber(word);
+            checkPhraseTemp.add(wordTemp[1]);
+            count++;
+        }
+        
+        return checkPhraseTemp;
     }
 }
