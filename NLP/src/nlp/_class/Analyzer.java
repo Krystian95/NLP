@@ -30,9 +30,8 @@ public class Analyzer {
     private final String[] punctuation = {".", ",", ";", ":", "·", "!", "?", "|", "%", "(", ")", "=", "'", "^", "*", "+", "°", "§", "@", "-", "_", "<", ">"};
     private List<String> listPunctuation;
     private String regularExpressionPunctuation;
-    
+
     private ArrayList<String> stopWords;
-    private ArrayList<String> fileNames;
 
     private int tokenCounter;
     private final String tokenSeparator = "_";
@@ -42,6 +41,7 @@ public class Analyzer {
     /**
      * Constructor for the Analyzer class.
      *
+     * @param mainSubFolder the name of the main subfolder
      * @param pathStopWords the path to the stop words file
      * @param pathFolderTexts the path to folder containing the texts
      * @throws FileNotFoundException
@@ -53,10 +53,9 @@ public class Analyzer {
         this.pathStopWords = pathStopWords;
         this.pathFolderTexts = pathFolderTexts;
         this.tokenCounter = 0;
-        this.fileNames = new ArrayList<>();
         this.stopWords = new ArrayList<>();
         this.listPunctuation = Arrays.asList(this.punctuation);
-        
+
         File directory = new File(this.mainSubFolder + this.tempFolderName);
         deleteRecursivelyOnlyFilesFromDirectory(directory);
     }
@@ -72,24 +71,26 @@ public class Analyzer {
         generateRegularExpressionForPunctuation(this.punctuation);
         saveStopWords(this.pathStopWords);
 
-        File folder = new File(this.pathFolderTexts);
-        listFilesForFolder(folder);
+        ArrayList<String> fileNames;
 
-        for (String fileName : this.fileNames) {
+        File folder = new File(this.pathFolderTexts);
+        fileNames = listFilesForFolder(folder);
+
+        for (String fileName : fileNames) {
             createIntermediateFileWithEnumeratedTokens(this.pathFolderTexts, fileName);
         }
-        
+
         File tempFolder = new File(this.mainSubFolder + this.tempFolderName);
-        listFilesForFolder(tempFolder);
-        
-        for (String tempFileName : this.fileNames) {
+        fileNames = listFilesForFolder(tempFolder);
+
+        for (String tempFileName : fileNames) {
             createFinalFileWithoutStopWords(this.mainSubFolder + this.tempFolderName, tempFileName);
         }
-        
+
         File finalFolder = new File(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName);
-        listFilesForFolder(finalFolder);
-        
-        for (String finalFileName : this.fileNames) {
+        fileNames = listFilesForFolder(finalFolder);
+
+        for (String finalFileName : fileNames) {
             checkRecurrentQuotes(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, finalFileName, lenghtOfPhrase);
         }
     }
@@ -135,35 +136,33 @@ public class Analyzer {
             System.err.println(e);
         }
     }
-    
+
     private void createFinalFileWithoutStopWords(String path, String fileName) throws FileNotFoundException, UnsupportedEncodingException {
-        
+
         this.tokenCounter = 0;
         Scanner s;
 
         try (PrintWriter writer = new PrintWriter(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName + fileName, "UTF-8")) {
-            
+
             s = new Scanner(new File(path + fileName));
             while (s.hasNext()) {
-                
+
                 String word = s.next();
-                
+
                 String[] tokenNumberAndWord = separateTokenNumber(word);
-                
+
                 String wordToAnalyze = tokenNumberAndWord[1];
-                
-                
-                if(!stringIsStopWordOrPunctuationCharacter(wordToAnalyze)){
-                    
+
+                if (!stringIsStopWordOrPunctuationCharacter(wordToAnalyze)) {
+
                     //System.out.print(wordToAnalyze + " ");
-                    
-                    if(wordToAnalyze.length() > this.nLastCharsToRemove){
+                    if (wordToAnalyze.length() > this.nLastCharsToRemove) {
                         wordToAnalyze = wordToAnalyze.substring(0, wordToAnalyze.length() - this.nLastCharsToRemove);
                     }
-                    
+
                     String finalWorld = this.tokenSeparator + tokenNumberAndWord[0] + this.tokenSeparator + wordToAnalyze;
                     writeWordIntoFile(writer, finalWorld);
-                    
+
                     //System.out.println(wordToAnalyze);
                 }
             }
@@ -173,41 +172,42 @@ public class Analyzer {
             System.err.println(e);
         }
     }
-    
-    private String[] separateTokenNumber (String word) {
-        
+
+    private String[] separateTokenNumber(String word) {
+
         String[] wordSplitted = word.split(this.tokenSeparator);
-        String[] tokenNumberAndWord = {wordSplitted[1],wordSplitted[2]};
+        String[] tokenNumberAndWord = {wordSplitted[1], wordSplitted[2]};
 
         return tokenNumberAndWord;
     }
-    
-    private boolean stringIsStopWordOrPunctuationCharacter (String word) {
-        
+
+    private boolean stringIsStopWordOrPunctuationCharacter(String word) {
         return stringIsStopWord(word) || stringIsPunctuationCharacter(word);
     }
 
-    private void listFilesForFolder(File folder) {
-        
-        this.fileNames = new ArrayList<>();
-        
+    private ArrayList<String> listFilesForFolder(File folder) {
+
+        ArrayList<String> fileNames = new ArrayList<>();
+
         for (File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
                 listFilesForFolder(fileEntry);
-            } else if (!fileEntry.getName().equals(".DS_Store")){
-                this.fileNames.add(fileEntry.getName());
+            } else if (!fileEntry.getName().equals(".DS_Store")) {
+                fileNames.add(fileEntry.getName());
             }
         }
+
+        return fileNames;
     }
 
     private boolean stringContainsPunctuationCharacters(String word) {
         return Arrays.stream(this.punctuation).parallel().anyMatch(word::contains);
     }
-    
+
     private boolean stringIsStopWord(String word) {
         return this.stopWords.contains(word);
     }
-    
+
     private boolean stringIsPunctuationCharacter(String word) {
         return this.listPunctuation.contains(word);
     }
@@ -223,7 +223,6 @@ public class Analyzer {
     }
 
     private void writeWordIntoFile(PrintWriter writer, String word) throws FileNotFoundException, UnsupportedEncodingException {
-
         writer.print(word + " ");
     }
 
@@ -247,9 +246,9 @@ public class Analyzer {
         regularExpression.append("))");
         this.regularExpressionPunctuation = regularExpression.toString();
     }
-    
+
     private void deleteRecursivelyOnlyFilesFromDirectory(File directory) {
-        
+
         for (File file : directory.listFiles()) {
             if (!file.isDirectory()) {
                 file.delete();
@@ -258,7 +257,7 @@ public class Analyzer {
             }
         }
     }
-    
+
     /*
     private void checkRecurrentQuotes (String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException {
         
@@ -304,59 +303,50 @@ public class Analyzer {
         System.out.println();
         System.out.println();
     }
-    */
-    
-    private void checkRecurrentQuotes (String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException, IOException {
-        
+     */
+    private void checkRecurrentQuotes(String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException, IOException {
+
         ArrayList<String> checkPhrase = new ArrayList<String>();
         ArrayList<Boolean> checkTemp = new ArrayList<Boolean>();
-        
+
         checkPhrase = initializeCheckPharase(path, fileName, lenghtOfPhrase);
 
         //System.out.println(Arrays.toString(checkPhrase.toArray()));
-        
         BufferedReader in = new BufferedReader(new FileReader(path + fileName));
         String word;
 
         //List<String> list = new ArrayList<String>();
         int count = 0;
-        
-        while((word = in.readLine()) != null){
+
+        while ((word = in.readLine()) != null) {
             //list.add(word);
-            
-            
-            if(count >= lenghtOfPhrase){
-                
+
+            if (count >= lenghtOfPhrase) {
+
                 count = 0;
-                
+
                 //manageQuote();
-                
                 System.out.println(Arrays.toString(checkTemp.toArray()));
                 checkTemp.clear();
             }
-            
+
             String[] wordTemp = separateTokenNumber(word);
-            
+
             System.out.println(wordTemp[1]);
             //System.out.println(word);
-            
-            if(wordTemp[1].equals(checkPhrase.get(count))) {
+
+            if (wordTemp[1].equals(checkPhrase.get(count))) {
                 checkTemp.add(true);
             } else {
                 checkTemp.add(false);
             }
-            
+
             count++;
-            
+
         }
 
         //System.out.println(Arrays.toString(list.toArray()));
         //String[] stringArr = list.toArray(new String[0]);
-        
-        
-        
-        
-        
         /*
         Scanner s;
         int count = 0;
@@ -389,19 +379,18 @@ public class Analyzer {
             
             count++;
         }*/
-        
         System.out.println();
         System.out.println();
     }
-    
-    private ArrayList<String> initializeCheckPharase (String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException {
-        
+
+    private ArrayList<String> initializeCheckPharase(String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException {
+
         ArrayList<String> checkPhraseTemp = new ArrayList<String>();
-        
+
         Scanner s;
         int count = 0;
         s = new Scanner(new File(path + fileName));
-        
+
         while (s.hasNext() && count < lenghtOfPhrase) {
 
             String word = s.next();
@@ -409,7 +398,7 @@ public class Analyzer {
             checkPhraseTemp.add(wordTemp[1]);
             count++;
         }
-        
+
         return checkPhraseTemp;
     }
 }

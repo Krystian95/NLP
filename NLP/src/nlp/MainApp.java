@@ -2,6 +2,7 @@ package nlp;
 
 import nlp._class.Analyzer;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -10,7 +11,7 @@ import java.io.UnsupportedEncodingException;
  */
 public class MainApp {
 
-    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, IOException {
 
         String mainSubFolder = "texts/";
         String pathStopWords = mainSubFolder + "stop_words.txt";
