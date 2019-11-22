@@ -32,6 +32,7 @@ public class Analyzer {
     private String regularExpressionPunctuation;
 
     private ArrayList<String> stopWords;
+    private ArrayList<String[]> quotes = new ArrayList<String[]>();
 
     private int tokenCounter;
     private final String tokenSeparator = "_";
@@ -87,11 +88,26 @@ public class Analyzer {
             createFinalFileWithoutStopWords(this.mainSubFolder + this.tempFolderName, tempFileName);
         }
 
+        /*
         File finalFolder = new File(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName);
         fileNames = listFilesForFolder(finalFolder);
 
         for (String finalFileName : fileNames) {
             checkRecurrentQuotes(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, finalFileName, lenghtOfPhrase);
+        }
+         */
+        checkRecurrentQuotes(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, "~text_1.txt", lenghtOfPhrase);
+
+        // Stampa ArrayList citazioni
+        System.out.println();
+        System.out.println("Citazioni trovate:");
+        
+        for (int i = 0; i < quotes.size(); i++) {
+            for (int j = 0; j < quotes.get(i).length; j++) {
+                System.out.print(quotes.get(i)[j] + " ");
+            }
+
+            System.out.println();
         }
     }
 
@@ -258,9 +274,91 @@ public class Analyzer {
         }
     }
 
+    private void checkRecurrentQuotes(String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException {
+
+        ArrayList<String> contentOfText = new ArrayList<String>();
+        ArrayList<String> checkPhrase = new ArrayList<String>();
+        ArrayList<Boolean> checkTemp = new ArrayList<Boolean>();
+
+        checkPhrase = initializeCheckPharase(path, fileName, lenghtOfPhrase);
+
+        int count = 0;
+
+        ArrayList<String> fileNames;
+
+        File folder = new File(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName);
+        fileNames = listFilesForFolder(folder);
+
+        for (String file : fileNames) {
+
+            contentOfText = initializeArrayListText(path, file);
+
+            System.out.println("Inizializzo testo: " + file);
+
+            for (int i = 0; i < contentOfText.size(); i++) {
+
+                if (count >= lenghtOfPhrase) {
+
+                    if (areAllTrue(checkTemp))
+                    {
+                        String[] wordClearedTemp = separateTokenNumber(contentOfText.get(i - (lenghtOfPhrase)));
+                        manageQuote(file, wordClearedTemp[0]);
+                    }
+
+                    i = i - (lenghtOfPhrase - 1);
+                    count = 0;
+                    
+                    // Stampe test
+                    System.out.println(Arrays.toString(checkTemp.toArray()));
+
+                    checkTemp.clear();
+                }
+
+                String[] wordCleared = separateTokenNumber(contentOfText.get(i));
+
+                // Stampe test
+                System.out.println(wordCleared[1]);
+                //System.out.println(contentOfText.get(i));
+
+                if (wordCleared[1].equals(checkPhrase.get(count))) {
+                    checkTemp.add(true);
+                } else {
+                    checkTemp.add(false);
+                }
+
+                count++;
+            }
+
+            count = 0;
+            checkTemp.clear();
+        }
+    }
+
+    private ArrayList<String> initializeArrayListText(String path, String fileName) throws FileNotFoundException {
+
+        ArrayList<String> contentOfText = new ArrayList<String>();
+        Scanner s = new Scanner(new File(path + fileName));
+
+        while (s.hasNext()) {
+
+            String word = s.next();
+            contentOfText.add(word);
+        }
+
+        // Stampa tutto il testo contenuto in contentOfText
+        //System.out.println(Arrays.toString(contentOfText.toArray()));
+        System.out.println();
+        System.out.println();
+
+        return contentOfText;
+    }
+
     /*
+    // Versione 1 con Scanner
+    
     private void checkRecurrentQuotes (String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException {
         
+        ArrayList<String> contentOfText = new ArrayList<String>();
         ArrayList<String> checkPhrase = new ArrayList<String>();
         ArrayList<Boolean> checkTemp = new ArrayList<Boolean>();
         
@@ -274,6 +372,7 @@ public class Analyzer {
         s = new Scanner(new File(path + fileName));
         
         while (s.hasNext()) {
+            
             
             if(count >= lenghtOfPhrase){
                 s.reset();
@@ -298,12 +397,16 @@ public class Analyzer {
             }
             
             count++;
+            
         }
         
         System.out.println();
         System.out.println();
     }
      */
+ /*
+    // Versione 2 con BufferedReader
+    
     private void checkRecurrentQuotes(String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException, IOException {
 
         ArrayList<String> checkPhrase = new ArrayList<String>();
@@ -332,8 +435,8 @@ public class Analyzer {
 
             String[] wordTemp = separateTokenNumber(word);
 
-            System.out.println(wordTemp[1]);
-            //System.out.println(word);
+            //System.out.println(wordTemp[1]);
+            System.out.println(word);
 
             if (wordTemp[1].equals(checkPhrase.get(count))) {
                 checkTemp.add(true);
@@ -347,7 +450,7 @@ public class Analyzer {
 
         //System.out.println(Arrays.toString(list.toArray()));
         //String[] stringArr = list.toArray(new String[0]);
-        /*
+        
         Scanner s;
         int count = 0;
         int scannerCount = 0;
@@ -378,11 +481,11 @@ public class Analyzer {
             }
             
             count++;
-        }*/
+        }
         System.out.println();
         System.out.println();
     }
-
+     */
     private ArrayList<String> initializeCheckPharase(String path, String fileName, int lenghtOfPhrase) throws FileNotFoundException {
 
         ArrayList<String> checkPhraseTemp = new ArrayList<String>();
@@ -400,5 +503,20 @@ public class Analyzer {
         }
 
         return checkPhraseTemp;
+    }
+
+    private boolean areAllTrue(ArrayList<Boolean> checkTemp) {
+        
+        for (boolean element : checkTemp) {
+            if (!element) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void manageQuote(String nomeFile, String indice) {
+
+        quotes.add(new String[]{nomeFile, indice});
     }
 }
