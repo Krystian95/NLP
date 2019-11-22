@@ -109,6 +109,17 @@ public class Analyzer {
 
             System.out.println();
         }
+        
+        /*
+        
+        Come andare avanti?
+        
+        Si devono scorrere con un for tutti i file e caricare ogni volta il contenuto in un array, per ogni file in un for annidato prendere 
+        le n parole della citazione e passarle a checkRecurrentQuotes(), si itera shiftando di una posizione e le si ripassa a checkRecurrentQuotes().
+        Quindi initializeCheckPharase() non va bene per il noto problema dello Scanner. All'output finale bisogna passare anche il testo 
+        della citazione oltre al nome del file e all'indice.
+        
+        */
     }
 
     private void saveStopWords(String path) throws FileNotFoundException {
