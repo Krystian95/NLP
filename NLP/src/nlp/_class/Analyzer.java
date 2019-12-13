@@ -103,7 +103,7 @@ public class Analyzer {
 
                 checkPhraseTemp = initializeArrayListCheckPharase(contentOfText, shiftCount);
                 
-                System.out.println(finalFileName + " " + checkPhraseTemp);
+                //System.out.println(finalFileName + " " + checkPhraseTemp);
                 
                 shiftCount++;
 
@@ -308,6 +308,8 @@ public class Analyzer {
 
     private void checkRecurrentQuotes(String path, String fileName, int lenghtOfPhrase, ArrayList<String> contentOfText, ArrayList<String> checkPhrase) throws FileNotFoundException {
 
+        //System.out.println("AAA: " + Arrays.toString(checkPhrase.toArray()));
+        
         ArrayList<Boolean> checkTemp = new ArrayList<Boolean>();
 
         int count = 0;
@@ -318,16 +320,31 @@ public class Analyzer {
         fileNames = listFilesForFolder(folder);
 
         for (String file : fileNames) {
-
+            
             contentOfText = initializeArrayListText(path, file);
 
             //System.out.println("Inizializzo testo: " + file);
             for (int i = 0; i < contentOfText.size(); i++) {
-
-                if (count >= lenghtOfPhrase) {
+                
+                if (count < lenghtOfPhrase) {
+                    
+                    String[] wordCleared = separateTokenNumber(contentOfText.get(i));
+                
+                    // Stampe test
+                    //System.out.println(wordCleared[1] + "\tVS\t" + checkPhrase.get(count));
+                    //System.out.println(contentOfText.get(i));
+                    if (wordCleared[1].equals(checkPhrase.get(count))) {
+                        checkTemp.add(true);
+                    } else {
+                        checkTemp.add(false);
+                    }
+                    
+                    count++;
+                } 
+                if (count == lenghtOfPhrase) {
 
                     if (areAllTrue(checkTemp)) {
-                        String[] wordClearedTemp = separateTokenNumber(contentOfText.get(i - (lenghtOfPhrase)));
+                        String[] wordClearedTemp = separateTokenNumber(contentOfText.get((i + 1) - lenghtOfPhrase));
                         manageQuote(file, wordClearedTemp[0]);
                     }
 
@@ -335,22 +352,9 @@ public class Analyzer {
                     count = 0;
 
                     // Stampe test
-                    System.out.println(Arrays.toString(checkTemp.toArray()));
+                    //System.out.println(Arrays.toString(checkTemp.toArray()));
                     checkTemp.clear();
                 }
-
-                String[] wordCleared = separateTokenNumber(contentOfText.get(i));
-                
-                // Stampe test
-                System.out.println(wordCleared[1] + "\tVS\t" + checkPhrase.get(count));
-                //System.out.println(contentOfText.get(i));
-                if (wordCleared[1].equals(checkPhrase.get(count))) {
-                    checkTemp.add(true);
-                } else {
-                    checkTemp.add(false);
-                }
-
-                count++;
             }
 
             count = 0;
