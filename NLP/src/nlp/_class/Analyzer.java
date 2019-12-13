@@ -98,29 +98,35 @@ public class Analyzer {
 
             int shiftCount = 0;
             ArrayList<String> checkPhraseTemp = new ArrayList<String>();
-
+            ArrayList<String> checkPhraseTempOnlyWord = new ArrayList<String>();
+            
             for (int y = 0; y < contentOfText.size() - (this.lenghtOfPhrase - 1); y++) {
-
+                
+                // Se il nome del file che si sta analizzando è uguale a quello di origine e i numeri dei token sono identici, la cinquina non va aggiunta alle quotes
+                // Nel caso in cui venga aggiunta una cinquina diversa da quella di origine allora va aggiunta anche quella di origine
+                
                 checkPhraseTemp = initializeArrayListCheckPharase(contentOfText, shiftCount);
+                
+                checkPhraseTempOnlyWord = returnOnlyWordsCheckPhrase(checkPhraseTemp);
                 
                 //System.out.println(finalFileName + " " + checkPhraseTemp);
                 
                 shiftCount++;
 
-                checkRecurrentQuotes(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, finalFileName, lenghtOfPhrase, contentOfText, checkPhraseTemp);
+                checkRecurrentQuotes(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, finalFileName, lenghtOfPhrase, contentOfText, checkPhraseTempOnlyWord);
 
                 // Stampa ArrayList citazioni
                 System.out.println();
 
                 for (int i = 0; i < quotes.size(); i++) {
 
-                    if (quotes.size() > 1) {
+                    //if (quotes.size() > 1) {
                         for (int j = 0; j < quotes.get(i).length; j++) {
                             System.out.print(quotes.get(i)[j] + " ");
                         }
 
                         System.out.println();
-                    }
+                    //}
                 }
                 
                 System.out.println();
@@ -129,18 +135,6 @@ public class Analyzer {
                 quotes.clear();
             }
         }
-
-        //checkRecurrentQuotes(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, "~text_1.txt", lenghtOfPhrase);
-        /*
-        
-        Come andare avanti?
-        
-        Si devono scorrere con un for tutti i file e caricare ogni volta il contenuto in un array, per ogni file in un for annidato prendere 
-        le n parole della citazione e passarle a checkRecurrentQuotes(), si itera shiftando di una posizione e le si ripassa a checkRecurrentQuotes().
-        Quindi initializeCheckPharase() non va bene per il noto problema dello Scanner. All'output finale bisogna passare anche il testo 
-        della citazione oltre al nome del file e all'indice.
-        
-         */
     }
 
     private void saveStopWords(String path) throws FileNotFoundException {
@@ -222,7 +216,6 @@ public class Analyzer {
     }
 
     private String[] separateTokenNumber(String word) {
-
         String[] wordSplitted = word.split(this.tokenSeparator);
         String[] tokenNumberAndWord = {wordSplitted[1], wordSplitted[2]};
 
@@ -387,14 +380,24 @@ public class Analyzer {
         for (int i = 0; i < this.lenghtOfPhrase; i++) {
 
             String word = contentOfText.get(shiftCount + i);
-            String[] wordTemp = separateTokenNumber(word);
-            checkPhraseTemp.add(wordTemp[1]);
+            checkPhraseTemp.add(word);
         }
 
-        // System.out.println("checkPhraseTemp" + checkPhraseTemp);
         return checkPhraseTemp;
     }
+    
+    private ArrayList<String> returnOnlyWordsCheckPhrase(ArrayList<String> checkPhraseTemp) throws FileNotFoundException {
 
+        ArrayList<String> checkPhraseTempOnlyWord = new ArrayList<String>();
+        
+        for (int i = 0; i < checkPhraseTemp.size(); i++) {
+            String[] wordTemp = separateTokenNumber(checkPhraseTemp.get(i));
+            checkPhraseTempOnlyWord.add(wordTemp[1]);
+        }
+        
+        return checkPhraseTempOnlyWord;
+    }
+    
     private boolean areAllTrue(ArrayList<Boolean> checkTemp) {
 
         for (boolean element : checkTemp) {
