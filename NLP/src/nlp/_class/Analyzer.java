@@ -99,9 +99,11 @@ public class Analyzer {
             int shiftCount = 0;
             ArrayList<String> checkPhraseTemp = new ArrayList<String>();
             ArrayList<String> checkPhraseTempOnlyWord = new ArrayList<String>();
+            ArrayList<String> checkPhraseTempOnlyTokenNumber = new ArrayList<String>();
             
             for (int y = 0; y < contentOfText.size() - (this.lenghtOfPhrase - 1); y++) {
                 
+                // Come determinare il file di origine? é finalFileName?
                 // Se il nome del file che si sta analizzando è uguale a quello di origine e i numeri dei token sono identici, la cinquina non va aggiunta alle quotes
                 // Nel caso in cui venga aggiunta una cinquina diversa da quella di origine allora va aggiunta anche quella di origine
                 
@@ -109,11 +111,13 @@ public class Analyzer {
                 
                 checkPhraseTempOnlyWord = returnOnlyWordsCheckPhrase(checkPhraseTemp);
                 
+                checkPhraseTempOnlyTokenNumber = returnOnlyTokenNumberCheckPhrase(checkPhraseTemp);
+                
                 //System.out.println(finalFileName + " " + checkPhraseTemp);
                 
                 shiftCount++;
 
-                checkRecurrentQuotes(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, finalFileName, lenghtOfPhrase, contentOfText, checkPhraseTempOnlyWord);
+                checkRecurrentQuotes(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, finalFileName, lenghtOfPhrase, contentOfText, checkPhraseTempOnlyWord, finalFileName, checkPhraseTempOnlyTokenNumber);
 
                 // Stampa ArrayList citazioni
                 System.out.println();
@@ -299,11 +303,12 @@ public class Analyzer {
         }
     }
 
-    private void checkRecurrentQuotes(String path, String fileName, int lenghtOfPhrase, ArrayList<String> contentOfText, ArrayList<String> checkPhrase) throws FileNotFoundException {
+    private void checkRecurrentQuotes(String path, String fileName, int lenghtOfPhrase, ArrayList<String> contentOfText, ArrayList<String> checkPhrase, String finalFileName, ArrayList<String> checkPhraseTempOnlyTokenNumber) throws FileNotFoundException {
 
         //System.out.println("AAA: " + Arrays.toString(checkPhrase.toArray()));
         
         ArrayList<Boolean> checkTemp = new ArrayList<Boolean>();
+        ArrayList<Boolean> checkTempTokenNumber = new ArrayList<Boolean>();
 
         int count = 0;
 
@@ -322,6 +327,13 @@ public class Analyzer {
                 if (count < lenghtOfPhrase) {
                     
                     String[] wordCleared = separateTokenNumber(contentOfText.get(i));
+                    
+                    if(wordCleared[0].equals(checkPhraseTempOnlyTokenNumber.get(count)))
+                    {
+                        checkTempTokenNumber.add(true);
+                    } else {
+                        checkTempTokenNumber.add(false);
+                    }
                 
                     // Stampe test
                     //System.out.println(wordCleared[1] + "\tVS\t" + checkPhrase.get(count));
@@ -334,9 +346,18 @@ public class Analyzer {
                     
                     count++;
                 } 
+                
                 if (count == lenghtOfPhrase) {
-
-                    if (areAllTrue(checkTemp)) {
+                    // il confronto con il nome del file va fatto solo quando tutti i numeri dei token sono uguali
+                    if (areAllTrue(checkTemp) && !areAllTrue(checkTempTokenNumber)) {
+                        System.out.println(Arrays.toString(checkPhrase.toArray()));
+                        System.out.println(Arrays.toString(checkPhraseTempOnlyTokenNumber.toArray()));
+                        System.out.println(Arrays.toString(checkTemp.toArray()));
+                        System.out.println(Arrays.toString(checkTempTokenNumber.toArray()));
+                        System.out.println(finalFileName + "   " + file);
+                        System.out.println();
+                    //if (areAllTrue(checkTemp) && !areAllTrue(checkTempTokenNumber) && !finalFileName.equals(file)) {
+                    //if (areAllTrue(checkTemp) && !areAllTrue(checkTempTokenNumber)) {
                         String[] wordClearedTemp = separateTokenNumber(contentOfText.get((i + 1) - lenghtOfPhrase));
                         manageQuote(file, wordClearedTemp[0]);
                     }
@@ -347,11 +368,13 @@ public class Analyzer {
                     // Stampe test
                     //System.out.println(Arrays.toString(checkTemp.toArray()));
                     checkTemp.clear();
+                    checkTempTokenNumber.clear();
                 }
             }
 
             count = 0;
             checkTemp.clear();
+            checkTempTokenNumber.clear();
         }
     }
 
@@ -398,6 +421,18 @@ public class Analyzer {
         return checkPhraseTempOnlyWord;
     }
     
+    private ArrayList<String> returnOnlyTokenNumberCheckPhrase(ArrayList<String> checkPhraseTemp) throws FileNotFoundException {
+
+        ArrayList<String> checkPhraseTempOnlyTokenNumber = new ArrayList<String>();
+        
+        for (int i = 0; i < checkPhraseTemp.size(); i++) {
+            String[] wordTemp = separateTokenNumber(checkPhraseTemp.get(i));
+            checkPhraseTempOnlyTokenNumber.add(wordTemp[0]);
+        }
+        
+        return checkPhraseTempOnlyTokenNumber;
+    }
+    
     private boolean areAllTrue(ArrayList<Boolean> checkTemp) {
 
         for (boolean element : checkTemp) {
@@ -410,6 +445,9 @@ public class Analyzer {
 
     private void manageQuote(String nomeFile, String indice) {
 
+        // Aggiungere if che fa quotes.add solo se la coppia da aggiungere non esiste già, nel checkRecurrentQuotes
+        // aggiungere la condizione del nome del file (caso in cui ci sia la stessa cinquina iniziale in più file)
+        
         quotes.add(new String[]{nomeFile, indice});
     }
 }
