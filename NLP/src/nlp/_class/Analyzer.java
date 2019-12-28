@@ -127,12 +127,22 @@ public class Analyzer {
         System.out.println();
 
         for (int i = 0; i < quotes.size(); i++) {
-
+            
             for (int j = 0; j < quotes.get(i).length; j++) {
-                System.out.print(quotes.get(i)[j] + "\t");
+                
+                if(j == 0){
+                    System.out.print(quotes.get(i)[j].substring(1) + "\t");
+                } else {
+                    System.out.print(quotes.get(i)[j] + "\t");
+                }
             }
             
             System.out.println();
+            
+            // Aggiungi andata a capo ad ogni gruppo di citazioni
+            if(i+1 < quotes.size() && !quotes.get(i)[2].equals(quotes.get(i+1)[2])) {
+                System.out.println();
+            }
         }
 
         System.out.println();
