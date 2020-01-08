@@ -37,7 +37,7 @@ public class Analyzer {
     private int tokenCounter;
     private final String tokenSeparator = "_";
     private int nLastCharsToRemove = 2;
-    private int lenghtOfPhrase = 5;
+    private int lenghtOfPhrase = 3;
 
     /**
      * Constructor for the Analyzer class.
