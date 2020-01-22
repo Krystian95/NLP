@@ -20,9 +20,9 @@ import javax.swing.JTextArea;
  * @author cristian
  */
 public class Analyzer {
-    
+
     ProjectUI gui = new ProjectUI();
-    //JTextArea TextArea;
+    javax.swing.JTextArea textAreaFragment;
 
     private String mainSubFolder;
     private String pathStopWords;
@@ -117,9 +117,8 @@ public class Analyzer {
 
         // Ordina quotes in base alle citazioni
         quotes.sort(Comparator.comparing(a -> a[2]));
-        
+
         // Stampa ArrayList citazioni
-        
         System.out.println();
 
         for (int i = 0; i < quotes.size(); i++) {
@@ -137,11 +136,12 @@ public class Analyzer {
         }
 
         System.out.println();
-        
-        gui.setText("CIAONE");
-        
-        //TextArea.setText("aaa");
-        //gui.setTextArea(TextArea);
+
+        this.textAreaFragment.setText("PROVA");
+    }
+
+    public void setTextArea(javax.swing.JTextArea jTextArea1) {
+        this.textAreaFragment = jTextArea1;
     }
 
     private void saveStopWords(String path) throws FileNotFoundException {
@@ -331,7 +331,7 @@ public class Analyzer {
                     } else {
                         checkTemp.add(false);
                     }
-                    
+
                     count++;
                 }
 
@@ -340,7 +340,7 @@ public class Analyzer {
                         String[] wordClearedTemp = separateTokenNumber(contentOfText.get((i + 1) - lenghtOfPhrase));
                         manageQuote(file, wordClearedTemp[0], checkPhrase);
                     }
-                    
+
                     i = i - (lenghtOfPhrase - 1);
                     count = 0;
                     checkTemp.clear();
@@ -451,12 +451,12 @@ public class Analyzer {
         }
         return paragraphOriginalText.toString();
     }
-    
-    public void setlenghtOfPhrase(Integer lenghtOfPhrase){
+
+    public void setlenghtOfPhrase(Integer lenghtOfPhrase) {
         this.lenghtOfPhrase = lenghtOfPhrase;
     }
-    
-    public void setnLastCharsToRemove(Integer nLastCharsToRemove){
+
+    public void setnLastCharsToRemove(Integer nLastCharsToRemove) {
         this.nLastCharsToRemove = nLastCharsToRemove;
     }
 }

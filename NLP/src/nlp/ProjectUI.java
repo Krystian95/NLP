@@ -17,7 +17,7 @@ import javax.swing.JTextArea;
  * @author Lorenzo
  */
 public class ProjectUI extends javax.swing.JFrame {
-    
+
     private String testo = "vuoto";
 
     /**
@@ -126,13 +126,15 @@ public class ProjectUI extends javax.swing.JFrame {
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ProjectUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        Integer lenghtOfPhrase = (Integer)jSpinner2.getValue();
-        Integer nLastCharsToRemove = (Integer)jSpinner1.getValue();
-        
+
+        Integer lenghtOfPhrase = (Integer) jSpinner2.getValue();
+        Integer nLastCharsToRemove = (Integer) jSpinner1.getValue();
+
         analyzer.setlenghtOfPhrase(lenghtOfPhrase);
         analyzer.setnLastCharsToRemove(nLastCharsToRemove);
-        
+
+        analyzer.setTextArea(jTextArea1);
+
         try {
             analyzer.analyze();
         } catch (UnsupportedEncodingException ex) {
@@ -140,26 +142,8 @@ public class ProjectUI extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(ProjectUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        // Test:
-        
-        //jTextArea1.setText("CCCCCCCCCCCC");
-        System.out.println("CCCCCCCCCCCC");
-        System.out.println(lenghtOfPhrase);
-        System.out.println(nLastCharsToRemove);
-        System.out.println(testo);
     }//GEN-LAST:event_jButton1ActionPerformed
-    /*
-    public void setTextArea(JTextArea TextArea){
-        jTextArea1 = TextArea;
-    }
-    */
-    public void setText(String text){
-        //this.testo = text;
-        jTextArea1.setText(text);
-        System.out.println("QUI: " + text);
-    }
-    
+
     /**
      * @param args the command line arguments
      */
