@@ -1,4 +1,4 @@
-package nlp._class;
+package nlp;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import javax.swing.JTextArea;
 
 /**
  * The main class of the program.
@@ -19,6 +20,9 @@ import java.util.Scanner;
  * @author cristian
  */
 public class Analyzer {
+    
+    ProjectUI gui = new ProjectUI();
+    //JTextArea TextArea;
 
     private String mainSubFolder;
     private String pathStopWords;
@@ -113,8 +117,9 @@ public class Analyzer {
 
         // Ordina quotes in base alle citazioni
         quotes.sort(Comparator.comparing(a -> a[2]));
-
+        
         // Stampa ArrayList citazioni
+        
         System.out.println();
 
         for (int i = 0; i < quotes.size(); i++) {
@@ -132,6 +137,11 @@ public class Analyzer {
         }
 
         System.out.println();
+        
+        gui.setText("CIAONE");
+        
+        //TextArea.setText("aaa");
+        //gui.setTextArea(TextArea);
     }
 
     private void saveStopWords(String path) throws FileNotFoundException {
@@ -440,5 +450,13 @@ public class Analyzer {
             }
         }
         return paragraphOriginalText.toString();
+    }
+    
+    public void setlenghtOfPhrase(Integer lenghtOfPhrase){
+        this.lenghtOfPhrase = lenghtOfPhrase;
+    }
+    
+    public void setnLastCharsToRemove(Integer nLastCharsToRemove){
+        this.nLastCharsToRemove = nLastCharsToRemove;
     }
 }
