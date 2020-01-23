@@ -51,7 +51,7 @@ public class QuotesFinder extends javax.swing.JFrame {
         setTitle("QuotesFinder");
         setLocation(new java.awt.Point(130, 100));
 
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(2, 0, 10, 1));
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(2, 0, 100, 1));
 
         jLabel1.setText("Numero parole citazione:");
 
@@ -71,9 +71,9 @@ public class QuotesFinder extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
-        jLabel3.setText("Il file delle stop words è moficabile in: \"QuotesFinder > texts > stop_words.txt\"");
+        jLabel3.setText("Il file delle stop words è modificabile in: \"QuotesFinder > STOP WORDS > stop_words.txt\"");
 
-        jLabel4.setText("I file di testo vanno posizionati in: \"QuotesFinder > texts > original_texts\"");
+        jLabel4.setText("I file di testo vanno posizionati in: \"QuotesFinder > TEXTS\"");
 
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -105,7 +105,7 @@ public class QuotesFinder extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE))
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -142,9 +142,9 @@ public class QuotesFinder extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
         jTextArea1.setText("");
-        String mainSubFolder = "texts/";
-        String pathStopWords = mainSubFolder + "stop_words.txt";
-        String pathFolderTexts = mainSubFolder + "original_texts/";
+        String mainSubFolder = "TEXTS/";
+        String pathStopWords = "STOP WORDS/stop_words.txt";
+        String pathFolderTexts = mainSubFolder;
 
         Analyzer analyzer = null;
         try {

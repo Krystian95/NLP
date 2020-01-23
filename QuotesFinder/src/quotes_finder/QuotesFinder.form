@@ -53,7 +53,7 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jSeparator2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jButton1" pref="310" max="32767" attributes="0"/>
+                      <Component id="jButton1" pref="248" max="32767" attributes="0"/>
                   </Group>
                   <Component id="jScrollPane1" alignment="1" max="32767" attributes="0"/>
               </Group>
@@ -101,7 +101,7 @@
     <Component class="javax.swing.JSpinner" name="jSpinner1">
       <Properties>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="2" maximum="10" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
+          <SpinnerModel initial="2" maximum="100" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
         </Property>
       </Properties>
     </Component>
@@ -150,12 +150,12 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Il file delle stop words &#xe8; moficabile in: &quot;QuotesFinder &gt; texts &gt; stop_words.txt&quot;"/>
+        <Property name="text" type="java.lang.String" value="Il file delle stop words &#xe8; modificabile in: &quot;QuotesFinder &gt; STOP WORDS &gt; stop_words.txt&quot;"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="I file di testo vanno posizionati in: &quot;QuotesFinder &gt; texts &gt; original_texts&quot;"/>
+        <Property name="text" type="java.lang.String" value="I file di testo vanno posizionati in: &quot;QuotesFinder &gt; TEXTS&quot;"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator1">

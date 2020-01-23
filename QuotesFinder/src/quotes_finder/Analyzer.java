@@ -60,7 +60,7 @@ public class Analyzer {
         this.stopWords = new ArrayList<>();
         this.listPunctuation = Arrays.asList(this.punctuation);
 
-        File directory = new File(this.mainSubFolder + this.tempFolderName);
+        File directory = new File(this.tempFolderName);
         deleteRecursivelyOnlyFilesFromDirectory(directory);
     }
 
@@ -84,19 +84,19 @@ public class Analyzer {
             createIntermediateFileWithEnumeratedTokens(this.pathFolderTexts, fileName);
         }
 
-        File tempFolder = new File(this.mainSubFolder + this.tempFolderName);
+        File tempFolder = new File(this.tempFolderName);
         fileNames = listFilesForFolder(tempFolder);
 
         for (String tempFileName : fileNames) {
-            createFinalFileWithoutStopWords(this.mainSubFolder + this.tempFolderName, tempFileName);
+            createFinalFileWithoutStopWords(this.tempFolderName, tempFileName);
         }
 
-        File finalFolder = new File(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName);
+        File finalFolder = new File(this.tempFolderName + this.tempFinalFolderName);
         fileNames = listFilesForFolder(finalFolder);
 
         for (String finalFileName : fileNames) {
 
-            contentOfText = initializeArrayListText(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, finalFileName);
+            contentOfText = initializeArrayListText(this.tempFolderName + this.tempFinalFolderName, finalFileName);
 
             int shiftCount = 0;
             ArrayList<String> checkPhraseTemp = new ArrayList<String>();
@@ -110,7 +110,7 @@ public class Analyzer {
                 checkPhraseTempOnlyTokenNumber = returnOnlyTokenNumberCheckPhrase(checkPhraseTemp);
                 shiftCount++;
 
-                checkRecurrentQuotes(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName, finalFileName, lenghtOfPhrase, contentOfText, checkPhraseTempOnlyWord, finalFileName, checkPhraseTempOnlyTokenNumber);
+                checkRecurrentQuotes(this.tempFolderName + this.tempFinalFolderName, finalFileName, lenghtOfPhrase, contentOfText, checkPhraseTempOnlyWord, finalFileName, checkPhraseTempOnlyTokenNumber);
             }
         }
 
@@ -169,7 +169,7 @@ public class Analyzer {
         this.tokenCounter = 0;
         Scanner s;
 
-        try (PrintWriter writer = new PrintWriter(this.mainSubFolder + this.tempFolderName + "~" + fileName, "UTF-8")) {
+        try (PrintWriter writer = new PrintWriter(this.tempFolderName + "~" + fileName, "UTF-8")) {
 
             s = new Scanner(new File(path + fileName));
             while (s.hasNext()) {
@@ -199,7 +199,7 @@ public class Analyzer {
         this.tokenCounter = 0;
         Scanner s;
 
-        try (PrintWriter writer = new PrintWriter(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName + fileName, "UTF-8")) {
+        try (PrintWriter writer = new PrintWriter(this.tempFolderName + this.tempFinalFolderName + fileName, "UTF-8")) {
 
             s = new Scanner(new File(path + fileName));
             while (s.hasNext()) {
@@ -314,7 +314,7 @@ public class Analyzer {
         ArrayList<Boolean> checkTemp = new ArrayList<Boolean>();
         ArrayList<Boolean> checkTempTokenNumber = new ArrayList<Boolean>();
         ArrayList<String> fileNames;
-        File folder = new File(this.mainSubFolder + this.tempFolderName + this.tempFinalFolderName);
+        File folder = new File(this.tempFolderName + this.tempFinalFolderName);
         fileNames = listFilesForFolder(folder);
         int count = 0;
 
@@ -435,7 +435,7 @@ public class Analyzer {
 
     private void manageQuote(String nomeFile, String indice, ArrayList<String> checkPhrase) throws FileNotFoundException {
 
-        String paragraphOriginalText = recoverOriginalText(this.mainSubFolder + this.tempFolderName, nomeFile, Integer.parseInt(indice));
+        String paragraphOriginalText = recoverOriginalText(this.tempFolderName, nomeFile, Integer.parseInt(indice));
         String joined = String.join(" ", checkPhrase);
         String nomeFileOriginal = nomeFile;
         nomeFile = nomeFile.substring(1, nomeFile.length() - 4);
