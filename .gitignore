@@ -2,3 +2,6 @@
 .DS_Store
 /NLP/build/
 NLP/.DS_Store
+/QuotesFinder/nbproject/private/
+/QuotesFinder/build/
+/QuotesFinder/dist/
