@@ -117,34 +117,20 @@ public class Analyzer {
         quotes.sort(Comparator.comparing(a -> a[2]));
 
         // Stampa ArrayList citazioni
-        //System.out.println();
-
         for (int i = 0; i < quotes.size(); i++) {
-            
+
             this.textAreaFragment.append(quotes.get(i)[2] + "\t\t");
             this.textAreaFragment.append(quotes.get(i)[0] + "\t");
             this.textAreaFragment.append(quotes.get(i)[4]);
             this.textAreaFragment.append("\n");
 
-            /*
-            System.out.print(quotes.get(i)[0] + "\t\t");
-            System.out.print(quotes.get(i)[2] + "\t\t");
-            System.out.print(quotes.get(i)[4]);
-            System.out.println();
-            */
-
             // A capo ad ogni gruppo di citazioni
             if (i + 1 < quotes.size() && !quotes.get(i)[2].equals(quotes.get(i + 1)[2])) {
                 this.textAreaFragment.append("\n");
-                
-                //System.out.println();
             }
         }
 
         this.textAreaFragment.append("\n");
-        //System.out.println();
-
-        //this.textAreaFragment.setText("PROVA");
     }
 
     public void setTextArea(javax.swing.JTextArea jTextArea1) {
@@ -453,7 +439,14 @@ public class Analyzer {
         for (int i = 0; i < contentOfText.size(); i++) {
 
             if (i >= (indice - 10) && i <= ((indice + lenghtOfPhrase) + 10)) {
-                paragraphOriginalText.append(contentOfText.get(i) + " ");
+
+                String content = contentOfText.get(i);
+
+                if (i > 0 && !this.stopWords.contains(content)) {
+                    paragraphOriginalText.append(" ");
+                }
+
+                paragraphOriginalText.append(content);
             }
         }
         return paragraphOriginalText.toString();

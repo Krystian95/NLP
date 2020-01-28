@@ -17,8 +17,6 @@ import java.util.logging.Logger;
  */
 public class QuotesFinder extends javax.swing.JFrame {
 
-    private String testo = "vuoto";
-
     /**
      * Creates new form ProjectUI
      */
@@ -140,7 +138,7 @@ public class QuotesFinder extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
+
         jTextArea1.setText("");
         String mainSubFolder = "TEXTS/";
         String pathStopWords = "STOP WORDS/stop_words.txt";
@@ -149,9 +147,7 @@ public class QuotesFinder extends javax.swing.JFrame {
         Analyzer analyzer = null;
         try {
             analyzer = new Analyzer(mainSubFolder, pathStopWords, pathFolderTexts);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(QuotesFinder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnsupportedEncodingException ex) {
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
             Logger.getLogger(QuotesFinder.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -202,6 +198,7 @@ public class QuotesFinder extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new QuotesFinder().setVisible(true);
             }
