@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-import javax.swing.JTextArea;
 
 /**
  * The main class of the program.
@@ -34,8 +33,8 @@ public class Analyzer {
     private String regularExpressionPunctuation;
 
     private ArrayList<String> stopWords;
-    private ArrayList<String> contentOfText = new ArrayList<String>();
-    private ArrayList<String[]> quotes = new ArrayList<String[]>();
+    private ArrayList<String> contentOfText = new ArrayList<>();
+    private ArrayList<String[]> quotes = new ArrayList<>();
 
     private int tokenCounter;
     private final String tokenSeparator = "_";
@@ -99,9 +98,9 @@ public class Analyzer {
             contentOfText = initializeArrayListText(this.tempFolderName + this.tempFinalFolderName, finalFileName);
 
             int shiftCount = 0;
-            ArrayList<String> checkPhraseTemp = new ArrayList<String>();
-            ArrayList<String> checkPhraseTempOnlyWord = new ArrayList<String>();
-            ArrayList<String> checkPhraseTempOnlyTokenNumber = new ArrayList<String>();
+            ArrayList<String> checkPhraseTemp = new ArrayList<>();
+            ArrayList<String> checkPhraseTempOnlyWord = new ArrayList<>();
+            ArrayList<String> checkPhraseTempOnlyTokenNumber = new ArrayList<>();
 
             for (int y = 0; y < contentOfText.size() - (this.lenghtOfPhrase - 1); y++) {
 
@@ -311,8 +310,8 @@ public class Analyzer {
 
     private void checkRecurrentQuotes(String path, String fileName, int lenghtOfPhrase, ArrayList<String> contentOfText, ArrayList<String> checkPhrase, String finalFileName, ArrayList<String> checkPhraseTempOnlyTokenNumber) throws FileNotFoundException {
 
-        ArrayList<Boolean> checkTemp = new ArrayList<Boolean>();
-        ArrayList<Boolean> checkTempTokenNumber = new ArrayList<Boolean>();
+        ArrayList<Boolean> checkTemp = new ArrayList<>();
+        ArrayList<Boolean> checkTempTokenNumber = new ArrayList<>();
         ArrayList<String> fileNames;
         File folder = new File(this.tempFolderName + this.tempFinalFolderName);
         fileNames = listFilesForFolder(folder);
@@ -378,7 +377,7 @@ public class Analyzer {
 
     private ArrayList<String> initializeArrayListCheckPharase(ArrayList<String> contentOfText, int shiftCount) throws FileNotFoundException {
 
-        ArrayList<String> checkPhraseTemp = new ArrayList<String>();
+        ArrayList<String> checkPhraseTemp = new ArrayList<>();
 
         for (int i = 0; i < this.lenghtOfPhrase; i++) {
 
@@ -391,7 +390,7 @@ public class Analyzer {
 
     private ArrayList<String> returnOnlyWordsCheckPhrase(ArrayList<String> checkPhraseTemp) throws FileNotFoundException {
 
-        ArrayList<String> checkPhraseTempOnlyWord = new ArrayList<String>();
+        ArrayList<String> checkPhraseTempOnlyWord = new ArrayList<>();
 
         for (int i = 0; i < checkPhraseTemp.size(); i++) {
             String[] wordTemp = separateTokenNumber(checkPhraseTemp.get(i));
@@ -403,7 +402,7 @@ public class Analyzer {
 
     private ArrayList<String> returnOnlyTokenNumberCheckPhrase(ArrayList<String> checkPhraseTemp) throws FileNotFoundException {
 
-        ArrayList<String> checkPhraseTempOnlyTokenNumber = new ArrayList<String>();
+        ArrayList<String> checkPhraseTempOnlyTokenNumber = new ArrayList<>();
 
         for (int i = 0; i < checkPhraseTemp.size(); i++) {
             String[] wordTemp = separateTokenNumber(checkPhraseTemp.get(i));
@@ -448,7 +447,7 @@ public class Analyzer {
     private String recoverOriginalText(String path, String nomeFile, Integer indice) throws FileNotFoundException {
 
         StringBuilder paragraphOriginalText = new StringBuilder();
-        ArrayList<String> contentOfText = new ArrayList<String>();
+        ArrayList<String> contentOfText = new ArrayList<>();
         contentOfText = returnOnlyWordsCheckPhrase(initializeArrayListText(path, nomeFile));
 
         for (int i = 0; i < contentOfText.size(); i++) {
