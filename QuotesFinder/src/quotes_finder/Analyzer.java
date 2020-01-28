@@ -442,7 +442,7 @@ public class Analyzer {
 
                 String content = contentOfText.get(i);
 
-                if (i > 0 && !this.stopWords.contains(content)) {
+                if (i > 0 && !this.stopWords.contains(content) && !contentOfText.get(i - 1).equals("'")) {
                     paragraphOriginalText.append(" ");
                 }
 
