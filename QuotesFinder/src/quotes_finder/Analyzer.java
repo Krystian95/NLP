@@ -294,7 +294,7 @@ public class Analyzer {
         }
     }
 
-    private void checkRecurrentQuotes(String path, String fileName, int lenghtOfPhrase, ArrayList<String> contentOfText, ArrayList<String> checkPhrase, String finalFileName, ArrayList<String> checkPhraseTempOnlyTokenNumber) throws FileNotFoundException {
+    private void checkRecurrentQuotes(String path, String originalFileName, int lenghtOfPhrase, ArrayList<String> contentOfText, ArrayList<String> checkPhrase, String finalFileName, ArrayList<String> checkPhraseTempOnlyTokenNumber) throws FileNotFoundException {
 
         ArrayList<Boolean> checkTemp = new ArrayList<>();
         ArrayList<Boolean> checkTempTokenNumber = new ArrayList<>();
@@ -329,7 +329,7 @@ public class Analyzer {
                 }
 
                 if (count == lenghtOfPhrase) {
-                    if (areAllTrue(checkTemp) && !areAllTrue(checkTempTokenNumber)) {
+                    if (areAllTrue(checkTemp) && ((file.equals(originalFileName) && !areAllTrue(checkTempTokenNumber)) || !file.equals(originalFileName))) {
                         String[] wordClearedTemp = separateTokenNumber(contentOfText.get((i + 1) - lenghtOfPhrase));
                         manageQuote(file, wordClearedTemp[0], checkPhrase);
                     }
