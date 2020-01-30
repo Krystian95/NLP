@@ -140,8 +140,8 @@ public class QuotesFinder extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
         jTextArea1.setText("");
-        String mainSubFolder = "TEXTS/";
-        String pathStopWords = "STOP WORDS/stop_words.txt";
+        String mainSubFolder = createMainSubFolder();
+        String pathStopWords = createPathStopWords();
         String pathFolderTexts = mainSubFolder;
 
         Analyzer analyzer = null;
@@ -168,6 +168,31 @@ public class QuotesFinder extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    public String getOsName() {
+        String OS = System.getProperty("os.name");
+        return OS;
+    }
+
+    public boolean isWindows() {
+        return getOsName().startsWith("Windows");
+    }
+
+    public String createMainSubFolder() {
+        if (isWindows()) {
+            return "TEXTS\\";
+        } else {
+            return "TEXTS/";
+        }
+    }
+    
+    public String createPathStopWords() {
+        if (isWindows()) {
+            return "STOP WORDS\\stop_words.txt";
+        } else {
+            return "STOP WORDS/stop_words.txt";
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */

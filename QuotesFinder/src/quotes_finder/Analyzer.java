@@ -19,14 +19,15 @@ import java.util.Scanner;
  * @author cristian
  */
 public class Analyzer {
-
+    
     javax.swing.JTextArea textAreaFragment;
 
     private String mainSubFolder;
     private String pathStopWords;
     private String pathFolderTexts;
-    private final String tempFolderName = "temp_files/";
-    private final String tempFinalFolderName = "final/";
+    
+    private final String tempFolderName = createTempFolderName();
+    private final String tempFinalFolderName = createTempFinalFolderName();
 
     private final String[] punctuation = {".", ",", ";", ":", "·", "!", "?", "|", "%", "(", ")", "=", "'", "^", "*", "+", "°", "§", "@", "-", "_", "<", ">"};
     private List<String> listPunctuation;
@@ -458,5 +459,31 @@ public class Analyzer {
 
     public void setnLastCharsToRemove(Integer nLastCharsToRemove) {
         this.nLastCharsToRemove = nLastCharsToRemove;
+    }
+    
+    public String getOsName()
+    {
+        String OS = System.getProperty("os.name");
+        return OS;
+   }
+
+    public boolean isWindows() {
+        return getOsName().startsWith("Windows");
+    }
+    
+    public String createTempFolderName() {
+        if(isWindows()){
+            return "temp_files\\";
+        } else {
+            return "temp_files/";
+        }
+    }
+    
+    public String createTempFinalFolderName() {
+        if(isWindows()){
+            return "final\\";
+        } else {
+            return "final/";
+        }
     }
 }
