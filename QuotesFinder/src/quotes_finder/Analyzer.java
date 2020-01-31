@@ -463,12 +463,12 @@ public class Analyzer {
     
     public String getOsName()
     {
-        String OS = System.getProperty("os.name");
+        String OS = System.getProperty("os.name").toLowerCase();
         return OS;
    }
 
     public boolean isWindows() {
-        return getOsName().startsWith("Windows");
+        return getOsName().contains("win");
     }
     
     public String createTempFolderName() {
