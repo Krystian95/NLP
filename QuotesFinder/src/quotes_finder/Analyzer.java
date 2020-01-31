@@ -1,10 +1,18 @@
 package quotes_finder;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -19,13 +27,13 @@ import java.util.Scanner;
  * @author cristian
  */
 public class Analyzer {
-    
+
     javax.swing.JTextArea textAreaFragment;
 
     private String mainSubFolder;
     private String pathStopWords;
     private String pathFolderTexts;
-    
+
     private final String tempFolderName = createTempFolderName();
     private final String tempFinalFolderName = createTempFinalFolderName();
 
@@ -120,6 +128,11 @@ public class Analyzer {
         // Stampa ArrayList citazioni
         for (int i = 0; i < quotes.size(); i++) {
 
+            /*System.out.println(quotes.get(i)[2] + "\t\t");
+            System.out.println(quotes.get(i)[0] + "\t");
+            System.out.println(quotes.get(i)[4]);
+            System.out.println("\n");*/
+
             this.textAreaFragment.append(quotes.get(i)[2] + "\t\t");
             this.textAreaFragment.append(quotes.get(i)[0] + "\t");
             this.textAreaFragment.append(quotes.get(i)[4]);
@@ -128,10 +141,12 @@ public class Analyzer {
             // A capo ad ogni gruppo di citazioni
             if (i + 1 < quotes.size() && !quotes.get(i)[2].equals(quotes.get(i + 1)[2])) {
                 this.textAreaFragment.append("\n");
+                //System.out.println("\n");
             }
         }
 
         this.textAreaFragment.append("\n");
+        //System.out.println("\n");
     }
 
     public void setTextArea(javax.swing.JTextArea jTextArea1) {
@@ -157,10 +172,46 @@ public class Analyzer {
 
         try (PrintWriter writer = new PrintWriter(this.tempFolderName + "~" + fileName, "UTF-8")) {
 
-            s = new Scanner(new File(path + fileName));
+            System.out.println("System.getProperty(\"file.encoding\"): " + System.getProperty("file.encoding"));
+            System.out.println("Charset.defaultCharset(): " + Charset.defaultCharset());
+            System.out.println("System.getProperty(\"java.version\"): " + System.getProperty("java.version"));
+
+            /*String text = "你好！";
+            System.out.println(text); // <<<======================= Fails!       
+            System.setOut(new PrintStream(System.out, true, "UTF8")); // Essential!
+            System.out.println(text); // <<<======================= Works!  */
+            
+            
+            /*BufferedReader br = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(path + fileName), StandardCharsets.UTF_8
+            ));
+
+            System.out.println(br.readLine());*/
+            
+            
+            /*InputStream inputStream = new FileInputStream(path + fileName);
+            try (Reader inputStreamReader = new InputStreamReader(inputStream, "UTF-8")) {
+                System.out.println("TEST inputStreamReader: " + inputStreamReader.read());
+
+                int data = inputStreamReader.read();
+                while (data != -1) {
+                    char theChar = (char) data;
+                    data = inputStreamReader.read();
+
+                    System.out.println("TEST inputStreamReader: " + theChar);
+                }
+            }*/
+
+            s = new Scanner(new File(path + fileName), "UTF-8");
             while (s.hasNext()) {
 
+                System.setOut(new PrintStream(System.out, true, "UTF8"));
+
                 String word = s.next();
+                //String word = new String(s.next().getBytes(), Charset.forName("UTF-8"));
+                //String word = new String(s.next().getBytes("UTF-8"), Charset.forName("UTF-8"));
+
+                System.out.println(word + "\n");
 
                 if (stringContainsPunctuationCharacters(word)) {
 
@@ -460,27 +511,26 @@ public class Analyzer {
     public void setnLastCharsToRemove(Integer nLastCharsToRemove) {
         this.nLastCharsToRemove = nLastCharsToRemove;
     }
-    
-    public String getOsName()
-    {
+
+    public String getOsName() {
         String OS = System.getProperty("os.name").toLowerCase();
         return OS;
-   }
+    }
 
     public boolean isWindows() {
         return getOsName().contains("win");
     }
-    
+
     public String createTempFolderName() {
-        if(isWindows()){
+        if (isWindows()) {
             return "temp_files\\";
         } else {
             return "temp_files/";
         }
     }
-    
+
     public String createTempFinalFolderName() {
-        if(isWindows()){
+        if (isWindows()) {
             return "final\\";
         } else {
             return "final/";
