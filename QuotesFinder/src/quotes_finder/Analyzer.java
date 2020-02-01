@@ -99,12 +99,12 @@ public class Analyzer {
             createFinalFileWithoutStopWords(this.tempFolderName, tempFileName);
         }
 
-        File finalFolder = new File(this.tempFolderName + this.tempFinalFolderName);
+        File finalFolder = new File(this.tempFinalFolderName);
         fileNames = listFilesForFolder(finalFolder);
 
         for (String finalFileName : fileNames) {
 
-            contentOfText = initializeArrayListText(this.tempFolderName + this.tempFinalFolderName, finalFileName);
+            contentOfText = initializeArrayListText(this.tempFinalFolderName, finalFileName);
 
             int shiftCount = 0;
             ArrayList<String> checkPhraseTemp = new ArrayList<>();
@@ -118,12 +118,16 @@ public class Analyzer {
                 checkPhraseTempOnlyTokenNumber = returnOnlyTokenNumberCheckPhrase(checkPhraseTemp);
                 shiftCount++;
 
-                checkRecurrentQuotes(this.tempFolderName + this.tempFinalFolderName, finalFileName, lenghtOfPhrase, contentOfText, checkPhraseTempOnlyWord, finalFileName, checkPhraseTempOnlyTokenNumber);
+                checkRecurrentQuotes(this.tempFinalFolderName, finalFileName, lenghtOfPhrase, contentOfText, checkPhraseTempOnlyWord, finalFileName, checkPhraseTempOnlyTokenNumber);
             }
         }
 
         // Ordina quotes in base alle citazioni
         quotes.sort(Comparator.comparing(a -> a[2]));
+        
+        // Test
+        this.textAreaFragment.append("Ciao\n");
+        this.textAreaFragment.append("καὶ μετὰ τοῖσιν\n");
 
         // Stampa ArrayList citazioni
         for (int i = 0; i < quotes.size(); i++) {
@@ -175,7 +179,7 @@ public class Analyzer {
             System.out.println("System.getProperty(\"file.encoding\"): " + System.getProperty("file.encoding"));
             System.out.println("Charset.defaultCharset(): " + Charset.defaultCharset());
             System.out.println("System.getProperty(\"java.version\"): " + System.getProperty("java.version"));
-
+            System.out.println("καὶ μετὰ τοῖσιν");
             /*String text = "你好！";
             System.out.println(text); // <<<======================= Fails!       
             System.setOut(new PrintStream(System.out, true, "UTF8")); // Essential!
@@ -211,7 +215,7 @@ public class Analyzer {
                 //String word = new String(s.next().getBytes(), Charset.forName("UTF-8"));
                 //String word = new String(s.next().getBytes("UTF-8"), Charset.forName("UTF-8"));
 
-                System.out.println(word + "\n");
+                //System.out.println(word + "\n");
 
                 if (stringContainsPunctuationCharacters(word)) {
 
@@ -232,15 +236,17 @@ public class Analyzer {
     }
 
     private void createFinalFileWithoutStopWords(String path, String fileName) throws FileNotFoundException, UnsupportedEncodingException {
-
+        
         this.tokenCounter = 0;
         Scanner s;
 
-        try (PrintWriter writer = new PrintWriter(this.tempFolderName + this.tempFinalFolderName + fileName, "UTF-8")) {
-
+        try (PrintWriter writer = new PrintWriter(this.tempFinalFolderName + fileName, "UTF-8")) {
+            // era qui e andava
             s = new Scanner(new File(path + fileName));
+            // era qui e andava
             while (s.hasNext()) {
-
+                System.out.println("AAAAAAAAAAAAA"); // Con NetBeans stampa, con il JAR no. Il problema è su s.hasNext()
+                // era qui e non andava
                 String word = s.next();
                 String[] tokenNumberAndWord = separateTokenNumber(word);
                 String wordToAnalyze = tokenNumberAndWord[1];
@@ -351,7 +357,7 @@ public class Analyzer {
         ArrayList<Boolean> checkTemp = new ArrayList<>();
         ArrayList<Boolean> checkTempTokenNumber = new ArrayList<>();
         ArrayList<String> fileNames;
-        File folder = new File(this.tempFolderName + this.tempFinalFolderName);
+        File folder = new File(this.tempFinalFolderName);
         fileNames = listFilesForFolder(folder);
         int count = 0;
 
