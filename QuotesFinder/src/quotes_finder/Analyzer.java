@@ -9,7 +9,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -26,22 +25,17 @@ import java.util.Scanner;
 public class Analyzer {
 
     javax.swing.JTextArea textAreaFragment;
-
     private String mainSubFolder;
     private String pathStopWords;
     private String pathFolderTexts;
-
     private final String tempFolderName = createTempFolderName();
     private final String tempFinalFolderName = createTempFinalFolderName();
-
     private final String[] punctuation = {".", ",", ";", ":", "·", "!", "?", "|", "%", "(", ")", "=", "'", "^", "*", "+", "°", "§", "@", "-", "_", "<", ">"};
     private List<String> listPunctuation;
     private String regularExpressionPunctuation;
-
     private ArrayList<String> stopWords;
     private ArrayList<String> contentOfText = new ArrayList<>();
     private ArrayList<String[]> quotes = new ArrayList<>();
-
     private int tokenCounter;
     private final String tokenSeparator = "_";
     private int nLastCharsToRemove = 2;
@@ -64,7 +58,6 @@ public class Analyzer {
         this.tokenCounter = 0;
         this.stopWords = new ArrayList<>();
         this.listPunctuation = Arrays.asList(this.punctuation);
-
         File directory = new File(this.tempFolderName);
         deleteRecursivelyOnlyFilesFromDirectory(directory);
     }
@@ -79,9 +72,7 @@ public class Analyzer {
 
         generateRegularExpressionForPunctuation(this.punctuation);
         saveStopWords(this.pathStopWords);
-
         ArrayList<String> fileNames;
-
         File folder = new File(this.pathFolderTexts);
         fileNames = listFilesForFolder(folder);
 
@@ -100,9 +91,7 @@ public class Analyzer {
         fileNames = listFilesForFolder(finalFolder);
 
         for (String finalFileName : fileNames) {
-            
             contentOfText = initializeArrayListText(this.tempFinalFolderName, finalFileName);
-            //this.textAreaFragment.append("AAA: " + contentOfText);
             int shiftCount = 0;
             ArrayList<String> checkPhraseTemp = new ArrayList<>();
             ArrayList<String> checkPhraseTempOnlyWord = new ArrayList<>();
@@ -113,24 +102,15 @@ public class Analyzer {
                 checkPhraseTempOnlyWord = returnOnlyWordsCheckPhrase(checkPhraseTemp);
                 checkPhraseTempOnlyTokenNumber = returnOnlyTokenNumberCheckPhrase(checkPhraseTemp);
                 shiftCount++;
-
                 checkRecurrentQuotes(this.tempFinalFolderName, finalFileName, lenghtOfPhrase, contentOfText, checkPhraseTempOnlyWord, finalFileName, checkPhraseTempOnlyTokenNumber);
             }
         }
 
         // Ordina quotes in base alle citazioni
         quotes.sort(Comparator.comparing(a -> a[2]));
-
-        // Test
-        //this.textAreaFragment.append("Test\n");
-        //this.textAreaFragment.append("Λητοῦς υἱέ\n");
         
         // Stampa ArrayList citazioni
         for (int i = 0; i < this.quotes.size(); i++) {
-            //System.out.println(quotes.get(i)[2] + "\t\t");
-            //System.out.println(quotes.get(i)[0] + "\t");
-            //System.out.println(quotes.get(i)[4]);
-            //System.out.println("\n");
             this.textAreaFragment.append(quotes.get(i)[2] + "\t\t");
             this.textAreaFragment.append(quotes.get(i)[0] + "\t");
             this.textAreaFragment.append(quotes.get(i)[4]);
@@ -139,12 +119,9 @@ public class Analyzer {
             // A capo ad ogni gruppo di citazioni
             if (i + 1 < quotes.size() && !quotes.get(i)[2].equals(quotes.get(i + 1)[2])) {
                 this.textAreaFragment.append("\n");
-                //System.out.println("\n");
             }
         }
-
         this.textAreaFragment.append("\n");
-        //System.out.println("\n");
     }
 
     public void setTextArea(javax.swing.JTextArea jTextArea1) {
@@ -170,45 +147,13 @@ public class Analyzer {
 
         try (PrintWriter writer = new PrintWriter(this.tempFolderName + "~" + fileName, "UTF-8")) {
 
-            System.out.println("System.getProperty(\"file.encoding\"): " + System.getProperty("file.encoding"));
-            System.out.println("Charset.defaultCharset(): " + Charset.defaultCharset());
-            System.out.println("System.getProperty(\"java.version\"): " + System.getProperty("java.version"));
-            System.out.println("καὶ μετὰ τοῖσιν");
-            /*String text = "你好！";
-            System.out.println(text); // <<<======================= Fails!       
-            System.setOut(new PrintStream(System.out, true, "UTF8")); // Essential!
-            System.out.println(text); // <<<======================= Works!  */
-
- /*BufferedReader br = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(path + fileName), StandardCharsets.UTF_8
-            ));
-
-            System.out.println(br.readLine());*/
- /*InputStream inputStream = new FileInputStream(path + fileName);
-            try (Reader inputStreamReader = new InputStreamReader(inputStream, "UTF-8")) {
-                System.out.println("TEST inputStreamReader: " + inputStreamReader.read());
-
-                int data = inputStreamReader.read();
-                while (data != -1) {
-                    char theChar = (char) data;
-                    data = inputStreamReader.read();
-
-                    System.out.println("TEST inputStreamReader: " + theChar);
-                }
-            }*/
             s = new Scanner(new File(path + fileName), "UTF-8");
             while (s.hasNext()) {
                 
                 System.setOut(new PrintStream(System.out, true, "UTF8"));
-
                 String word = s.next();
-                //this.textAreaFragment.append("AAA: " + word);
-                //String word = new String(s.next().getBytes(), Charset.forName("UTF-8"));
-                //String word = new String(s.next().getBytes("UTF-8"), Charset.forName("UTF-8"));
-
-                //System.out.println(word + "\n");
+                
                 if (stringContainsPunctuationCharacters(word)) {
-
                     String[] wordSplitted = splitStringForPunctuation(word);
 
                     for (String singleWord : wordSplitted) {
@@ -226,26 +171,16 @@ public class Analyzer {
     }
 
     public String fileToString(String location) throws IOException {
-        //FileReader fr = new FileReader(new File(location));
         InputStreamReader fr = new InputStreamReader(new FileInputStream(location), "UTF-8");
-        return readerToString(fr, location);
+        return readerToString(fr);
     }
     
-    /*
-    public String resourceToString(String location, Class c) throws IOException {
-        InputStream is = c.getResourceAsStream(location);
-        InputStreamReader r = new InputStreamReader(is);
-        return readerToString(r, location);
-    }
-    */
-    
-    public String readerToString(InputStreamReader r, String location) throws IOException {
+    public String readerToString(InputStreamReader r) throws IOException {
         StringWriter sw = new StringWriter();
         char[] buf = new char[1024];
         int len;
         while ((len = r.read(buf)) > 0) {
             sw.write(buf, 0, len);
-            //this.textAreaFragment.append(location + ": " + Arrays.toString(buf) + "\n");
         }
         r.close();
         sw.close();
@@ -255,77 +190,35 @@ public class Analyzer {
     private void createFinalFileWithoutStopWords(String path, String fileName) throws FileNotFoundException, UnsupportedEncodingException, IOException {
 
         this.tokenCounter = 0;
-        Scanner s;
-
         String fileInString = fileToString(path + fileName);
-        //this.textAreaFragment.append("BBB: " + fileInString);
         String[] fileInArray = fileInString.split(" ");
 
         try (PrintWriter writer = new PrintWriter(this.tempFinalFolderName + fileName, "UTF-8")) {
 
             for (int i = 0; i < fileInArray.length; i++) {
                 String word = fileInArray[i];
-                //System.out.println(word);
-                String[] tokenNumberAndWord = separateTokenNumber(word, "createFinalFileWithoutStopWords");
-                String wordToAnalyze = tokenNumberAndWord[1];
-
-                if (!stringIsStopWordOrPunctuationCharacter(wordToAnalyze)) {
-
-                    if (wordToAnalyze.length() > this.nLastCharsToRemove) {
-                        wordToAnalyze = wordToAnalyze.substring(0, wordToAnalyze.length() - this.nLastCharsToRemove);
-                    }
-
-                    String finalWorld = this.tokenSeparator + tokenNumberAndWord[0] + this.tokenSeparator + wordToAnalyze;
-                    //System.out.println(finalWorld);
-                    writeWordIntoFile(writer, finalWorld, tokenNumberAndWord[0]);
-                }
-            }
-
-        } catch (Exception e) {
-            System.err.println("ERROR! An error occours when trying to write a temporany FINAL file inside the project folder. Here some details:");
-            System.err.println(e);
-        }
-
-        /*
-        try (PrintWriter writer = new PrintWriter(this.tempFinalFolderName + fileName, "UTF-8")) {
-            // era qui e andava
-            s = new Scanner(new File(path + fileName));
-            // era qui e andava
-            while (s.hasNext()) {
-                //System.out.println("AAAAAAAAAAAAA"); // Con NetBeans stampa, con il JAR no. Il problema è su s.hasNext()
-                // era qui e non andava
-                String word = s.next();
                 String[] tokenNumberAndWord = separateTokenNumber(word);
                 String wordToAnalyze = tokenNumberAndWord[1];
 
                 if (!stringIsStopWordOrPunctuationCharacter(wordToAnalyze)) {
-
                     if (wordToAnalyze.length() > this.nLastCharsToRemove) {
                         wordToAnalyze = wordToAnalyze.substring(0, wordToAnalyze.length() - this.nLastCharsToRemove);
                     }
-
+                    
                     String finalWorld = this.tokenSeparator + tokenNumberAndWord[0] + this.tokenSeparator + wordToAnalyze;
                     writeWordIntoFile(writer, finalWorld);
                 }
             }
-            s.close();
+
         } catch (Exception e) {
             System.err.println("ERROR! An error occours when trying to write a temporany FINAL file inside the project folder. Here some details:");
             System.err.println(e);
         }
-         */
     }
 
-    private String[] separateTokenNumber(String word, String chiamata) {
+    private String[] separateTokenNumber(String word) {
         String[] wordSplitted = word.split(this.tokenSeparator);
-        /*
-        if (wordSplitted.length <= 2) {
-            System.out.println(chiamata + " " + word);
-            System.out.println(Arrays.toString(wordSplitted));
-        }
-         */
         String[] tokenNumberAndWord = {wordSplitted[1], wordSplitted[2]};
-
         return tokenNumberAndWord;
     }
 
@@ -344,7 +237,6 @@ public class Analyzer {
                 fileNames.add(fileEntry.getName());
             }
         }
-
         return fileNames;
     }
 
@@ -361,18 +253,12 @@ public class Analyzer {
     }
 
     private String attachTokenNumber(String word) {
-
         this.tokenCounter++;
         return this.tokenSeparator + this.tokenCounter + this.tokenSeparator + word;
     }
 
     private String[] splitStringForPunctuation(String word) {
         return word.split(this.regularExpressionPunctuation);
-    }
-
-    private void writeWordIntoFile(PrintWriter writer, String word, String aaa) throws FileNotFoundException, UnsupportedEncodingException {
-        writer.print(word + " ");
-        //System.out.println(word);
     }
 
     private void writeWordIntoFile(PrintWriter writer, String word) throws FileNotFoundException, UnsupportedEncodingException {
@@ -427,8 +313,7 @@ public class Analyzer {
             for (int i = 0; i < contentOfText.size(); i++) {
 
                 if (count < lenghtOfPhrase) {
-
-                    String[] wordCleared = separateTokenNumber(contentOfText.get(i), "checkRecurrentQuotes 1");
+                    String[] wordCleared = separateTokenNumber(contentOfText.get(i));
 
                     if (wordCleared[0].equals(checkPhraseTempOnlyTokenNumber.get(count))) {
                         checkTempTokenNumber.add(true);
@@ -441,23 +326,20 @@ public class Analyzer {
                     } else {
                         checkTemp.add(false);
                     }
-
                     count++;
                 }
 
                 if (count == lenghtOfPhrase) {
                     if (areAllTrue(checkTemp) && ((file.equals(originalFileName) && !areAllTrue(checkTempTokenNumber)) || !file.equals(originalFileName))) {
-                        String[] wordClearedTemp = separateTokenNumber(contentOfText.get((i + 1) - lenghtOfPhrase), "checkRecurrentQuotes 2");
+                        String[] wordClearedTemp = separateTokenNumber(contentOfText.get((i + 1) - lenghtOfPhrase));
                         manageQuote(file, wordClearedTemp[0], checkPhrase);
                     }
-
                     i = i - (lenghtOfPhrase - 1);
                     count = 0;
                     checkTemp.clear();
                     checkTempTokenNumber.clear();
                 }
             }
-
             count = 0;
             checkTemp.clear();
             checkTempTokenNumber.clear();
@@ -467,8 +349,6 @@ public class Analyzer {
     private ArrayList<String> initializeArrayListText(String path, String fileName) throws FileNotFoundException, IOException {
 
         ArrayList<String> contentOfText = new ArrayList<String>();
-        //Scanner s = new Scanner(new File(path + fileName));
-        
         String fileInString = fileToString(path + fileName);
         String[] fileInArray = fileInString.split(" ");
         
@@ -476,14 +356,6 @@ public class Analyzer {
             String word = fileInArray[i];
             contentOfText.add(word);
         }
-        
-        /*
-        while (s.hasNext()) {
-
-            String word = s.next();
-            contentOfText.add(word);
-        }
-        */
         return contentOfText;
     }
 
@@ -496,7 +368,6 @@ public class Analyzer {
             String word = contentOfText.get(shiftCount + i);
             checkPhraseTemp.add(word);
         }
-
         return checkPhraseTemp;
     }
 
@@ -505,10 +376,9 @@ public class Analyzer {
         ArrayList<String> checkPhraseTempOnlyWord = new ArrayList<>();
 
         for (int i = 0; i < checkPhraseTemp.size(); i++) {
-            String[] wordTemp = separateTokenNumber(checkPhraseTemp.get(i), "returnOnlyWordsCheckPhrase");
+            String[] wordTemp = separateTokenNumber(checkPhraseTemp.get(i));
             checkPhraseTempOnlyWord.add(wordTemp[1]);
         }
-
         return checkPhraseTempOnlyWord;
     }
 
@@ -517,10 +387,9 @@ public class Analyzer {
         ArrayList<String> checkPhraseTempOnlyTokenNumber = new ArrayList<>();
 
         for (int i = 0; i < checkPhraseTemp.size(); i++) {
-            String[] wordTemp = separateTokenNumber(checkPhraseTemp.get(i), "returnOnlyTokenNumberCheckPhrase");
+            String[] wordTemp = separateTokenNumber(checkPhraseTemp.get(i));
             checkPhraseTempOnlyTokenNumber.add(wordTemp[0]);
         }
-
         return checkPhraseTempOnlyTokenNumber;
     }
 
