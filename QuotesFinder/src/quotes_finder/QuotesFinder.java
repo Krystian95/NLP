@@ -59,6 +59,11 @@ public class QuotesFinder extends javax.swing.JFrame {
 
         jButton1.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         jButton1.setText("Cerca citazioni");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jButton1MousePressed(evt);
+            }
+        });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -139,7 +144,6 @@ public class QuotesFinder extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
         jTextArea1.setText("");
         String mainSubFolder = createMainSubFolder();
         String pathStopWords = createPathStopWords();
@@ -168,6 +172,10 @@ public class QuotesFinder extends javax.swing.JFrame {
             Logger.getLogger(QuotesFinder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MousePressed
+        jTextArea1.setText("\nElaborazione in corso...");
+    }//GEN-LAST:event_jButton1MousePressed
 
     public String getOsName() {
         String OS = System.getProperty("os.name").toLowerCase();
